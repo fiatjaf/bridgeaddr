@@ -1,13 +1,9 @@
 <!-- @format -->
 
 <script>
-  var error
-  var id
   var kind
-  var endpoint
-  var key
-  var macaroon
-  var cert
+  var data = {}
+  var successId
 
   async function setLightningServer(e) {
     e.preventDefault()
@@ -16,42 +12,64 @@
     data.append('endpoint', endpoint)
     data.append('cert', cert)
 
+    switch (kind) {
+      case 'sparko':
+        data.append('key', key)
+        break
+      case 'lnd':
+        data.append('macaroon', macaroon)
+        break
+    }
+
     try {
-      switch (kind) {
-        case 'sparko':
-          data.append('key', key)
-          window.fetch('/set/sparko/' + id, {
-            method: 'PUT',
-            body: data
-          })
-          break
-        case 'lnd':
-          data.append('macaroon', macaroon)
-          window.fetch('/set/lnd/' + id, {
-            method: 'PUT',
-            body: data
-          })
-          break
+      let res = await window.fetch(`/set/${kind}`, {
+        method: 'PUT',
+        body: data
+      })
+      let {id, ok, err} = await res.json()
+      if (!ok) {
+        throw new Error(err)
       }
+
+      toast.success(`Settings saved!`)
+      successId = id
     } catch (err) {
-      error = err.message
+      toast.error(`Couldn't save: ${err.message}`)
+      return
     }
   }
 </script>
 
-{#if error} {error} {:else}
 <form on:submit="{setLightningServer}">
-  <label>id: <input bind:value="{id}"/></label>
   <select bind:value="{kind}">
     <option>sparko</option>
     <option>lnd</option>
   </select>
-  <label>endpoint: <input bind:value="{endpoint}"/></label>
+  <label>endpoint: <input bind:value="{data.endpoint}"/></label>
   {#if kind == 'sparko'}
-  <label>key: <input bind:value="{key}"/></label>
+  <label>key: <input bind:value="{data.key}"/></label>
   {:else if kind == 'lnd'}
-  <label>invoice macaroon: <textarea bind:value="{key}"/></label>
+  <label>invoice macaroon: <textarea bind:value="{data.macaroon}"/></label>
   {/if}
-  <label>tls certificate: <textarea bind:value="{cert}"/></label>
+  <label>tls certificate: <textarea bind:value="{data.cert}"/></label>
+  <button>Save</button>
 </form>
+{#if successId}
+<section>
+  <p>
+    Visit <a href="/{successId}">your donation page to get your static QR</a>
+  </p>
+</section>
 {/if}
+
+<style>
+  label {
+    display: block;
+  }
+  button {
+    display: block;
+  }
+  form * {
+    margin: 2px 4px;
+  }
+</style>

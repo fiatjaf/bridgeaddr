@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/fiatjaf/go-lnurl"
+	decodepay "github.com/fiatjaf/ln-decodepay"
 	"github.com/gorilla/mux"
 )
 
@@ -46,6 +47,20 @@ func lnurlValues(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		json.NewEncoder(w).Encode(
 			lnurl.ErrorResponse("failed to create invoice: " + err.Error()))
+		return
+	}
+
+	// check node id
+	inv, err := decodepay.Decodepay(bolt11)
+	if err != nil {
+		json.NewEncoder(w).Encode(
+			lnurl.ErrorResponse("failed to parse invoice: " + err.Error()))
+		return
+	}
+	if inv.Payee != id {
+		log.Warn().Msg("generated invoice is not from the correct node id")
+		json.NewEncoder(w).Encode(
+			lnurl.ErrorResponse("got an invoice from the wrong node id"))
 		return
 	}
 

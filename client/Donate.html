@@ -1,0 +1,29 @@
+<!-- @format -->
+
+<script>
+  import QR from 'svelte-kjua'
+  import bech32 from 'bech32'
+
+  let id = location.pathname.split('/').slice(-1)[0]
+  let url = `${location.protocol}//${location.host}/lnurl/${id}/params`
+  let lnurl = bech32.encode(
+    'lnurl',
+    bech32.toWords(url.split('').map(c => c.charCodeAt(0))),
+    1500
+  )
+</script>
+
+<svelte:head>
+  <title>Tip {id}</title>
+</svelte:head>
+<div>
+  <h1>Donate to Lightning node id {id}</h1>
+  <a href="lightning:lnurl"><QR value="{lnurl}"/></a>
+  <pre>{lnurl}</pre>
+</div>
+
+<style>
+  div {
+    text-align: center;
+  }
+</style>

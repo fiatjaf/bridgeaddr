@@ -5,3 +5,4 @@ public/*bundle*
 *.yaml
 lnurl-tip
 *.env
+bindata.go
