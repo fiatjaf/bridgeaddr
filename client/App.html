@@ -1,0 +1,57 @@
+<!-- @format -->
+
+<script>
+  var error
+  var id
+  var kind
+  var endpoint
+  var key
+  var macaroon
+  var cert
+
+  async function setLightningServer(e) {
+    e.preventDefault()
+
+    var data = new URLSearchParams()
+    data.append('endpoint', endpoint)
+    data.append('cert', cert)
+
+    try {
+      switch (kind) {
+        case 'sparko':
+          data.append('key', key)
+          window.fetch('/set/sparko/' + id, {
+            method: 'PUT',
+            body: data
+          })
+          break
+        case 'lnd':
+          data.append('macaroon', macaroon)
+          window.fetch('/set/lnd/' + id, {
+            method: 'PUT',
+            body: data
+          })
+          break
+      }
+    } catch (err) {
+      error = err.message
+    }
+  }
+</script>
+
+{#if error} {error} {:else}
+<form on:submit="{setLightningServer}">
+  <label>id: <input bind:value="{id}"/></label>
+  <select bind:value="{kind}">
+    <option>sparko</option>
+    <option>lnd</option>
+  </select>
+  <label>endpoint: <input bind:value="{endpoint}"/></label>
+  {#if kind == 'sparko'}
+  <label>key: <input bind:value="{key}"/></label>
+  {:else if kind == 'lnd'}
+  <label>invoice macaroon: <textarea bind:value="{key}"/></label>
+  {/if}
+  <label>tls certificate: <textarea bind:value="{cert}"/></label>
+</form>
+{/if}

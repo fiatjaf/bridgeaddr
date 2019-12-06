@@ -1,0 +1,15 @@
+{
+  "devDependencies": {
+    "rollup": "^1.27.8",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-livereload": "^1.0.4",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-svelte": "^5.1.1",
+    "rollup-plugin-terser": "^4.0.4",
+    "svelte": "^3.16.0"
+  },
+  "dependencies": {
+    "bech32": "^1.1.3",
+    "svelte-kjua": "^1.0.2"
+  }
+}

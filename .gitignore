@@ -1,0 +1,7 @@
+node_modules
+public/*bundle*
+*.swp
+*.swo
+*.yaml
+lnurl-tip
+*.env
