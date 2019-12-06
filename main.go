@@ -41,6 +41,11 @@ func main() {
 	router.Path("/lnurl/{id}/params").Methods("Get").HandlerFunc(lnurlParams)
 	router.Path("/lnurl/{id}/values").Methods("Get").HandlerFunc(lnurlValues)
 	router.PathPrefix("/public/").Handler(http.FileServer(&assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir}))
+	router.Path("/").Methods("GET").HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			http.ServeFile(w, r, "public/index.html")
+		},
+	)
 	router.Path("/{id}").Methods("GET").HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			http.ServeFile(w, r, "public/donate.html")
@@ -53,5 +58,6 @@ func main() {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
+	log.Debug().Str("addr", srv.Addr).Msg("listening")
 	srv.ListenAndServe()
 }

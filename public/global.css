@@ -8,15 +8,9 @@ html, body {
 
 body {
   margin: 10px auto;
-  width: 800px;
+  width: 900px;
   padding: 8px;
   box-sizing: border-box;
   font-family: 'Livvic', serif;
   font-size: 1.2em;
-}
-
-h1, p {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  word-break: break-all;
 }

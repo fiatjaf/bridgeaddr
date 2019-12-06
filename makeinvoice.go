@@ -53,8 +53,8 @@ func makeInvoice(kind string, jdata string, msat int) (bolt11 string, err error)
 			SparkToken:  data.Get("key").String(),
 			CallTimeout: time.Second * 3,
 		}
-		inv, err := spark.Call("lnurlinvoice", msat, "lnurl-tip/"+cuid.Slug(), hexh)
-		fmt.Println(msat, "lnurl-tip/"+cuid.Slug(), hexh)
+		inv, err := spark.Call("lnurlinvoice", msat, "tip.bigsun.xyz/"+cuid.Slug(), hexh)
+		fmt.Println(msat, "tip.bigsun.xyz/"+cuid.Slug(), hexh)
 		if err != nil {
 			return "", fmt.Errorf("lnurlinvoice call failed: %w", err)
 		}

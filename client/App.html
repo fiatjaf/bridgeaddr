@@ -1,6 +1,21 @@
 <!-- @format -->
 
 <script>
+  const certPlaceholder = `-----BEGIN CERTIFICATE-----
+MIICPDCCAeKgAwIBAgIRAMzWW6TGNgkeFEW4QfJY0U0wCgYIKoZI
+MB0GA1UEChMWbG5kIGF1dG9nZW5lcmF0ZWQgY2VydDEUMBIGA1UE
+YXdlcmswHhcNMTkxMTIxMTkyOTU3WhcNMjEwMTE1MTkyOTU3WjA3
+ExZsbmQgYXV0b2dlbmVyYXRlZCBjZXJ0MRQwEgYDVQQDEwtib2ht
+MBMGByqGSM49AgEGCCqGSM49AwEHA0IABMtmmd3yz4f+pY4qKVl8
+NAzrdotd+ZbM5mu7h5OMVMPtJ9LBnl0ovCBF15qBlWlpoO/bgGRh
+DgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wgacGA1Ud
+Ym9obS1iYXdlcmuCCWxvY2FsaG9zdIIEdW5peIIKdW5peHBhY2tl
+AAAAAAAAAAAAAAAAAAAAAYcEwKgPB4cECpMRE4cEwKg4AYcQKAQH
+/oXS3IcQ/oAAAAAAAADqQPL//oXS3IcQ/oAAAAAAAAA0AlH//mk9
+AAAIACf//gAAADAKBggqhkjOPQQDAgNIADBFAiA/64u25xBr+/CQ
+URFBB1y4AyysJe24lwIhAKyTkeIHCW1DwTGxQH9tfTlHfL1USABD
+-----END CERTIFICATE-----`
+
   var kind
   var data = {}
   var successId
@@ -40,20 +55,128 @@
   }
 </script>
 
-<form on:submit="{setLightningServer}">
-  <select bind:value="{kind}">
-    <option>sparko</option>
-    <option>lnd</option>
-  </select>
-  <label>endpoint: <input bind:value="{data.endpoint}"/></label>
-  {#if kind == 'sparko'}
-  <label>key: <input bind:value="{data.key}"/></label>
-  {:else if kind == 'lnd'}
-  <label>invoice macaroon: <textarea bind:value="{data.macaroon}"/></label>
-  {/if}
-  <label>tls certificate: <textarea bind:value="{data.cert}"/></label>
-  <button>Save</button>
-</form>
+<section>
+  <form on:submit="{setLightningServer}">
+    <select bind:value="{kind}">
+      <option>sparko</option>
+      <option>lnd</option>
+    </select>
+    {#if kind == 'sparko'}
+    <label
+      >endpoint:
+      <input
+        bind:value="{data.endpoint}"
+        placeholder="https://my.sparko:9737/rpc"
+    /></label>
+    <label>key: <input bind:value="{data.key}"/></label>
+    {:else if kind == 'lnd'}
+    <label
+      >HTTP endpoint:
+      <input bind:value="{data.endpoint}" placeholder="https://my.lnd:8080"
+    /></label>
+    <label
+      >invoice macaroon: <textarea rows="5" bind:value="{data.macaroon}" /> as
+      hex</label
+    >
+    {/if}
+    <label
+      >tls certificate:
+      <textarea
+        rows="16"
+        bind:value="{data.cert}"
+        placeholder="{certPlaceholder}"
+    /></label>
+    <button>Save</button>
+  </form>
+  <div>
+    <p>
+      <b>What is this?</b> A service that gives you a static address/QR code in
+      which you can receive tips, donations and stuff like that.
+    </p>
+    <p>
+      <b>Why?</b> Because if you're a street musician you don't want to stop
+      your music to manually generate an invoice on your phone so people can tip
+      you. You want a paper with a QR code printed on it.
+    </p>
+    <p>
+      <b>Is this different from other tipping services?</b> Yes, because it uses
+      <a
+        href="https://github.com/btcontract/lnurl-rfc/blob/master/spec.md#4-lnurl-pay"
+        >lnurl-pay</a
+      >, a protocol that combines HTTPS and Lightning to deliver fantastic user
+      experience.
+    </p>
+    <p>
+      <b>And it's also noncustodial?</b> Yes. Your node generates the invoices,
+      we only deliver the lnurl-pay interface.
+    </p>
+    <p>
+      <b>Which wallets support this? </b>
+      <a href="https://lightning-wallet.com/">BLW</a> and
+      <a href="https://t.me/lntxbot">@lntxbot</a> for now, but soon many others.
+    </p>
+    <p>
+      <b>How do I fill the form above?</b> Follow the placeholders. The formats
+      are tricky but with a little patience you'll get it.
+    </p>
+    <p>
+      <b>What is sparko?</b> A thin HTTP server on top of your c-lightning node.
+      It runs
+      <a
+        href="https://github.com/fiatjaf/lightningd-gjson-rpc/tree/master/cmd/sparko"
+        >as a plugin</a
+      >
+      and you can create keys with fine-grained permissions and give them out to
+      services (better than macaroons).
+    </p>
+    <p>
+      <b>How do I use this with c-ligntning?</b> Install the
+      <a
+        href="https://github.com/fiatjaf/lightningd-gjson-rpc/tree/master/cmd/sparko"
+        >sparko</a
+      >
+      and
+      <a
+        href="https://github.com/fiatjaf/lightningd-gjson-rpc/tree/master/cmd/lnurl"
+        >lnurl</a
+      >
+      plugins and generate a key with a single permission:
+      <code>+lnurlinvoice</code>, then paste it here.
+    </p>
+    <p>
+      <b>How do I get a Macaroon in hex format?</b>
+      <code
+        >xxd -ps -u -c 1000
+        $HOME/.lnd/data/chain/bitcoin/mainnet/invoices.macaroon</code
+      >
+      or ask someone to do it for you.
+    </p>
+    <p>
+      <b>What is this TLS certificate thing?</b> If you're using a self-signed
+      certificate for your Lightning server HTTP API you must paste here the
+      contents of the <code>tls.cert</code> or <code>cert.pem</code> here so we
+      can safely talk to your server.
+    </p>
+    <p>
+      <b
+        >Does my node have to be exposed to the open internet for this to
+        work?</b
+      >
+      No, you can
+      <a href="https://www.zerotier.com/download/">install ZeroTier</a> and
+      connect to the public network <code>8056c2e21c000001</code>, then tell
+      your API server to listen at the <code>28.0.0.0</code> address you'll be
+      assigned there. If you do that you can even throw away your TLS certs (at
+      least on sparko, on lnd it seems to be impossible), as communication
+      through ZeroTier is end-to-end encrypted on a lower layer.
+    </p>
+    <p><b>Can I print the QR code for my node?</b> Yes.</p>
+    <p>
+      <b>Why is this site so ugly?</b> We're waiting for a volunteer designer to
+      show up.
+    </p>
+  </div>
+</section>
 {#if successId}
 <section>
   <p>
@@ -63,13 +186,35 @@
 {/if}
 
 <style>
-  label {
-    display: block;
+  section {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
   }
-  button {
-    display: block;
+  form {
+    width: 58%;
+    margin-right: 2%;
+    min-width: 400px;
   }
   form * {
     margin: 2px 4px;
+  }
+  section > div {
+    width: 40%;
+    min-width: 300px;
+  }
+  label {
+    display: flex;
+    align-items: center;
+  }
+  input,
+  textarea {
+    flex-grow: 2;
+  }
+  button {
+    display: block;
+    width: 50%;
+    padding: 4px;
+    margin: 4px auto !important;
   }
 </style>
