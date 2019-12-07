@@ -84,7 +84,7 @@
         placeholder="{certPlaceholder}"
     /></label>
     {:else}
-    <a on:click="{e => showTLSCert = true}">include tls cert</a>
+    <a on:click="{e => showTLSCert = true}">include tls cert?</a>
     {/if}
     <button>save</button>
     {/if}
@@ -216,5 +216,10 @@
     white-space: pre-wrap;
     word-wrap: break-word;
     word-break: break-all;
+  }
+  a {
+    cursor: pointer;
+    color: #4a680d;
+    text-decoration: underline;
   }
 </style>
