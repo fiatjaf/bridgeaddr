@@ -37,18 +37,25 @@ func main() {
 		log.Fatal().Err(err).Msg("couldn't connect to postgres")
 	}
 
+	// files
+	assets := &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, Prefix: "/public/"}
+	indexhtml := MustAsset("public/index.html")
+	donatehtml := MustAsset("public/donate.html")
+
 	router.Path("/set/{kind}").Methods("PUT").HandlerFunc(setUser)
 	router.Path("/lnurl/{id}/params").Methods("Get").HandlerFunc(lnurlParams)
 	router.Path("/lnurl/{id}/values").Methods("Get").HandlerFunc(lnurlValues)
-	router.PathPrefix("/public/").Handler(http.FileServer(&assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir}))
+	router.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(assets)))
 	router.Path("/").Methods("GET").HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			http.ServeFile(w, r, "public/index.html")
+			w.Header().Add("Content-Type", "text/html")
+			w.Write(indexhtml)
 		},
 	)
 	router.Path("/{id}").Methods("GET").HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			http.ServeFile(w, r, "public/donate.html")
+			w.Header().Add("Content-Type", "text/html")
+			w.Write(donatehtml)
 		},
 	)
 
