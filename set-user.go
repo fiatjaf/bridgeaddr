@@ -16,12 +16,13 @@ func jsonErrorf(str string, args ...interface{}) (j struct {
 	Ok    bool   `json:"ok"`
 	Error string `json:"error"`
 }) {
-	j.Error = fmt.Sprintf(str, args)
+	j.Error = fmt.Sprintf(str, args...)
 	return
 }
 
 func setUser(w http.ResponseWriter, r *http.Request) {
 	kind := mux.Vars(r)["kind"]
+	w.Header().Add("Content-Type", "application/json")
 
 	defer r.Body.Close()
 	jdata, err := ioutil.ReadAll(r.Body)
@@ -33,7 +34,7 @@ func setUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// make a test invoice so we can get the node id
-	bolt11, err := makeInvoice(kind, string(jdata), 1000)
+	bolt11, err := makeInvoice("~", kind, string(jdata), 1000)
 	if err != nil {
 		w.WriteHeader(401)
 		json.NewEncoder(w).Encode(jsonErrorf("failed to create test invoice: %w", err))

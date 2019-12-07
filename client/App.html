@@ -1,62 +1,58 @@
 <!-- @format -->
 
 <script>
-  const certPlaceholder = `-----BEGIN CERTIFICATE-----
-MIICPDCCAeKgAwIBAgIRAMzWW6TGNgkeFEW4QfJY0U0wCgYIKoZI
-MB0GA1UEChMWbG5kIGF1dG9nZW5lcmF0ZWQgY2VydDEUMBIGA1UE
-YXdlcmswHhcNMTkxMTIxMTkyOTU3WhcNMjEwMTE1MTkyOTU3WjA3
-ExZsbmQgYXV0b2dlbmVyYXRlZCBjZXJ0MRQwEgYDVQQDEwtib2ht
-MBMGByqGSM49AgEGCCqGSM49AwEHA0IABMtmmd3yz4f+pY4qKVl8
-NAzrdotd+ZbM5mu7h5OMVMPtJ9LBnl0ovCBF15qBlWlpoO/bgGRh
-DgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wgacGA1Ud
-Ym9obS1iYXdlcmuCCWxvY2FsaG9zdIIEdW5peIIKdW5peHBhY2tl
-AAAAAAAAAAAAAAAAAAAAAYcEwKgPB4cECpMRE4cEwKg4AYcQKAQH
-/oXS3IcQ/oAAAAAAAADqQPL//oXS3IcQ/oAAAAAAAAA0AlH//mk9
-AAAIACf//gAAADAKBggqhkjOPQQDAgNIADBFAiA/64u25xBr+/CQ
-URFBB1y4AyysJe24lwIhAKyTkeIHCW1DwTGxQH9tfTlHfL1USABD
------END CERTIFICATE-----`
+  import {NotificationDisplay, notifier} from '@beyonk/svelte-notifications'
 
-  var kind
+  const certPlaceholder = `-----BEGIN CERTIFICATE-----
+  MIICPDCCAeKgAwIBAgIRAMzWW6TGNgkeFEW4QfJY0U0wCgYIKoZI
+  MB0GA1UEChMWbG5kIGF1dG9nZW5lcmF0ZWQgY2VydDEUMBIGA1UE
+  YXdlcmswHhcNMTkxMTIxMTkyOTU3WhcNMjEwMTE1MTkyOTU3WjA3
+  ExZsbmQgYXV0b2dlbmVyYXRlZCBjZXJ0MRQwEgYDVQQDEwtib2ht
+  MBMGByqGSM49AgEGCCqGSM49AwEHA0IABMtmmd3yz4f+pY4qKVl8
+  NAzrdotd+ZbM5mu7h5OMVMPtJ9LBnl0ovCBF15qBlWlpoO/bgGRh
+  DgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wgacGA1Ud
+  Ym9obS1iYXdlcmuCCWxvY2FsaG9zdIIEdW5peIIKdW5peHBhY2tl
+  AAAAAAAAAAAAAAAAAAAAAYcEwKgPB4cECpMRE4cEwKg4AYcQKAQH
+  /oXS3IcQ/oAAAAAAAADqQPL//oXS3IcQ/oAAAAAAAAA0AlH//mk9
+  AAAIACf//gAAADAKBggqhkjOPQQDAgNIADBFAiA/64u25xBr+/CQ
+  URFBB1y4AyysJe24lwIhAKyTkeIHCW1DwTGxQH9tfTlHfL1USABD
+  -----END CERTIFICATE-----`
+
+  var kind = 'lnd'
   var data = {}
   var successId
 
   async function setLightningServer(e) {
     e.preventDefault()
 
-    var data = new URLSearchParams()
-    data.append('endpoint', endpoint)
-    data.append('cert', cert)
-
-    switch (kind) {
-      case 'sparko':
-        data.append('key', key)
-        break
-      case 'lnd':
-        data.append('macaroon', macaroon)
-        break
-    }
-
     try {
       let res = await window.fetch(`/set/${kind}`, {
         method: 'PUT',
-        body: data
+        body: JSON.stringify(data)
       })
-      let {id, ok, err} = await res.json()
+      let {id, ok, error} = await res.json()
       if (!ok) {
-        throw new Error(err)
+        throw new Error(error)
+      } else {
+        notifier.success(`Settings saved!`)
+        successId = id
       }
-
-      toast.success(`Settings saved!`)
-      successId = id
     } catch (err) {
-      toast.error(`Couldn't save: ${err.message}`)
+      notifier.warning(`Couldn't save: ${err.message}`, 10000)
       return
     }
   }
 </script>
 
+<NotificationDisplay />
 <section>
   <form on:submit="{setLightningServer}">
+    {#if successId}
+    <h1>Node {successId} connected!</h1>
+    <p>
+      Visit <a href="/{successId}">your donation page to get your static QR</a>
+    </p>
+    {:else}
     <select bind:value="{kind}">
       <option>sparko</option>
       <option>lnd</option>
@@ -87,6 +83,7 @@ URFBB1y4AyysJe24lwIhAKyTkeIHCW1DwTGxQH9tfTlHfL1USABD
         placeholder="{certPlaceholder}"
     /></label>
     <button>Save</button>
+    {/if}
   </form>
   <div>
     <p>
@@ -155,12 +152,13 @@ URFBB1y4AyysJe24lwIhAKyTkeIHCW1DwTGxQH9tfTlHfL1USABD
       <b>What is this TLS certificate thing?</b> If you're using a self-signed
       certificate for your Lightning server HTTP API you must paste here the
       contents of the <code>tls.cert</code> or <code>cert.pem</code> here so we
-      can safely talk to your server.
+      can safely talk to your server. Just copy the entire file contents and
+      paste it here.
     </p>
     <p>
       <b
-        >Does my node have to be exposed to the open internet for this to
-        work?</b
+        >Does my node have to be exposed to the open internet for this to work?
+        Does it need a public IP address?</b
       >
       No, you can
       <a href="https://www.zerotier.com/download/">install ZeroTier</a> and
@@ -177,13 +175,6 @@ URFBB1y4AyysJe24lwIhAKyTkeIHCW1DwTGxQH9tfTlHfL1USABD
     </p>
   </div>
 </section>
-{#if successId}
-<section>
-  <p>
-    Visit <a href="/{successId}">your donation page to get your static QR</a>
-  </p>
-</section>
-{/if}
 
 <style>
   section {
@@ -216,5 +207,10 @@ URFBB1y4AyysJe24lwIhAKyTkeIHCW1DwTGxQH9tfTlHfL1USABD
     width: 50%;
     padding: 4px;
     margin: 4px auto !important;
+  }
+  h1 {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    word-break: break-all;
   }
 </style>

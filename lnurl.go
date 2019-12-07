@@ -19,7 +19,7 @@ func lnurlParams(w http.ResponseWriter, r *http.Request) {
 		Callback:        fmt.Sprintf("%s/lnurl/%s/values", s.ServiceURL, id),
 		MinSendable:     1000,
 		MaxSendable:     100000000,
-		EncodedMetadata: getMetadata(),
+		EncodedMetadata: getMetadata(id),
 		Tag:             "payRequest",
 	})
 }
@@ -43,7 +43,7 @@ func lnurlValues(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bolt11, err := makeInvoice(kind, jdata, msat)
+	bolt11, err := makeInvoice(id, kind, jdata, msat)
 	if err != nil {
 		json.NewEncoder(w).Encode(
 			lnurl.ErrorResponse("failed to create invoice: " + err.Error()))

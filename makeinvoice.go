@@ -19,13 +19,13 @@ import (
 	"github.com/tidwall/sjson"
 )
 
-func getMetadata() string {
+func getMetadata(nodeid string) string {
 	metadata, _ := sjson.Set("[]", "0.0", "text/plain")
-	metadata, _ = sjson.Set(metadata, "0.1", "a donation")
+	metadata, _ = sjson.Set(metadata, "0.1", "A donation to the Lightning node "+nodeid+" proxied by https://tip.bigsun.xyz/.")
 	return metadata
 }
 
-func makeInvoice(kind string, jdata string, msat int) (bolt11 string, err error) {
+func makeInvoice(nodeid, kind, jdata string, msat int) (bolt11 string, err error) {
 	data := gjson.Parse(jdata)
 	if data.Get("cert").Exists() {
 		caCertPool := x509.NewCertPool()
@@ -42,7 +42,7 @@ func makeInvoice(kind string, jdata string, msat int) (bolt11 string, err error)
 		}
 	}
 
-	h := sha256.Sum256([]byte(getMetadata()))
+	h := sha256.Sum256([]byte(getMetadata(nodeid)))
 	hexh := hex.EncodeToString(h[:])
 	b64h := base64.StdEncoding.EncodeToString(h[:])
 
