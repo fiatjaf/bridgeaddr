@@ -20,6 +20,7 @@
 
   var kind = 'lnd'
   var data = {}
+  var showTLSCert = false
   var successId
 
   async function setLightningServer(e) {
@@ -74,7 +75,7 @@
       >invoice macaroon: <textarea rows="5" bind:value="{data.macaroon}" /> as
       hex</label
     >
-    {/if}
+    {/if} {#if showTLSCert}
     <label
       >tls certificate:
       <textarea
@@ -82,7 +83,10 @@
         bind:value="{data.cert}"
         placeholder="{certPlaceholder}"
     /></label>
-    <button>Save</button>
+    {:else}
+    <a on:click="{e => showTLSCert = true}">include tls cert</a>
+    {/if}
+    <button>save</button>
     {/if}
   </form>
   <div>

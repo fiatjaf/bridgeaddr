@@ -27,18 +27,20 @@ func getMetadata(nodeid string) string {
 
 func makeInvoice(nodeid, kind, jdata string, msat int) (bolt11 string, err error) {
 	data := gjson.Parse(jdata)
+
+	defer func(prevTransport http.RoundTripper) {
+		http.DefaultClient.Transport = prevTransport
+	}(http.DefaultClient.Transport)
 	if data.Get("cert").Exists() {
 		caCertPool := x509.NewCertPool()
 		caCertPool.AppendCertsFromPEM([]byte(data.Get("cert").String()))
 
-		defer func(prevTransport http.RoundTripper) {
-			http.DefaultClient.Transport = prevTransport
-		}(http.DefaultClient.Transport)
-
 		http.DefaultClient.Transport = &http.Transport{
-			TLSClientConfig: &tls.Config{
-				RootCAs: caCertPool,
-			},
+			TLSClientConfig: &tls.Config{RootCAs: caCertPool},
+		}
+	} else {
+		http.DefaultClient.Transport = &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
 	}
 
