@@ -84,7 +84,9 @@
         placeholder="{certPlaceholder}"
     /></label>
     {:else}
-    <a on:click="{e => showTLSCert = true}">include tls cert?</a>
+    <a on:click="{e => showTLSCert = true}"
+      >include tls cert? (click if you know what you're doing.)</a
+    >
     {/if}
     <button>save</button>
     {/if}
@@ -152,27 +154,38 @@
       >
       or ask someone to do it for you.
     </p>
+    <p><b>Which ports should I open in my router?</b></p>
+    <p></p>
     <p>
-      <b>What is this TLS certificate thing?</b> If you're using a self-signed
-      certificate for your Lightning server HTTP API you must paste here the
-      contents of the <code>tls.cert</code> or <code>cert.pem</code> here so we
-      can safely talk to your server. Just copy the entire file contents and
-      paste it here.
+      None. Try calling <em>ifconfig | grep inet6 | grep global</em> in your
+      terminal. If you get a result that means you have a global IPv6 address
+      and that's enough. Tell your lnd to listen at that address and paste it
+      here. If your ISP isn't good enough to give you IPv6, proceed to the next
+      question for more instructions.
     </p>
     <p>
       <b
         >Does my node have to be exposed to the open internet for this to work?
-        Does it need a public IP address?</b
+        Does it need a public IPv4 address?</b
       >
-      No, you can
+      No, even if you don't have a public IPv4 or IPv6 you can still
       <a href="https://www.zerotier.com/download/">install ZeroTier</a> and
       connect to the public network <code>8056c2e21c000001</code>, then tell
-      your API server to listen at the <code>28.0.0.0</code> address you'll be
-      assigned there. If you do that you can even throw away your TLS certs (at
-      least on sparko, on lnd it seems to be impossible), as communication
+      your API server to listen at the <code>2x.0.0.0</code> address you'll be
+      assigned there. That's even safer than direct connection, as communication
       through ZeroTier is end-to-end encrypted on a lower layer.
     </p>
     <p><b>Can I print the QR code for my node?</b> Yes.</p>
+    <p>
+      <b>What is this TLS certificate thing?</b> If you're using a self-signed
+      certificate for your Lightning server HTTP API you can paste here the
+      contents of the <code>tls.cert</code> or <code>cert.pem</code> here so we
+      can safely talk to your server. Just copy the entire file contents and
+      paste it here. However this is all broken if your certificate isn't issued
+      for the exact IP address you've set your node to listen on. Generally that
+      isn't the case. If you don't specify the certificate tip.bigsun.xyz will
+      connect to your node in a less safe manner, but still pretty good.
+    </p>
     <p>
       <b>Why is this site so ugly?</b> We're waiting for a volunteer designer to
       show up.
