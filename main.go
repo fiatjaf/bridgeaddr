@@ -14,6 +14,7 @@ import (
 )
 
 type Settings struct {
+	Host        string `envconfig:"HOST" default:"0.0.0.0"`
 	Port        string `envconfig:"PORT" required:"true"`
 	ServiceURL  string `envconfig:"SERVICE_URL" required:"true"`
 	PostgresURL string `envconfig:"DATABASE_URL" required:"true"`
@@ -61,7 +62,7 @@ func main() {
 
 	srv := &http.Server{
 		Handler:      router,
-		Addr:         "0.0.0.0:" + s.Port,
+		Addr:         s.Host + ":" + s.Port,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
