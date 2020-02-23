@@ -21,7 +21,7 @@ import (
 
 func getMetadata(nodeid string) string {
 	metadata, _ := sjson.Set("[]", "0.0", "text/plain")
-	metadata, _ = sjson.Set(metadata, "0.1", "A donation to the Lightning node "+nodeid+" proxied by https://tip.bigsun.xyz/.")
+	metadata, _ = sjson.Set(metadata, "0.1", "An arbitrary payment to the Lightning node "+nodeid+" proxied by https://tip.bigsun.xyz/.")
 	return metadata
 }
 

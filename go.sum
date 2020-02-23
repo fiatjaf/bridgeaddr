@@ -51,6 +51,8 @@ github.com/fiatjaf/go-lnurl v0.0.0-20191128151042-c0c61d18b008 h1:5GhWZ2K90ZG1cg
 github.com/fiatjaf/go-lnurl v0.0.0-20191128151042-c0c61d18b008/go.mod h1:W4vs/WGny+SBdITmvXW/jD9wUQoHTAqPhhGiXR1G7/I=
 github.com/fiatjaf/go-lnurl v0.0.0-20191204022959-d2d1dfd48d29 h1:ZxnLtyig/ZMKHWeZbrimqAsVa2g/rcC8xZ3LonplkRA=
 github.com/fiatjaf/go-lnurl v0.0.0-20191204022959-d2d1dfd48d29/go.mod h1:W4vs/WGny+SBdITmvXW/jD9wUQoHTAqPhhGiXR1G7/I=
+github.com/fiatjaf/go-lnurl v0.0.0-20200223114045-045a04d746c6 h1:0wbQs3nsLaNwcPz6R0PE9AZr7dxNbgCW5j0qShjD8aU=
+github.com/fiatjaf/go-lnurl v0.0.0-20200223114045-045a04d746c6/go.mod h1:W4vs/WGny+SBdITmvXW/jD9wUQoHTAqPhhGiXR1G7/I=
 github.com/fiatjaf/lightningd-gjson-rpc v0.1.0 h1:SV1vGXgdy9qLVtRMo3sKhSJILC7Wzq+pIYOzZ+bUTOM=
 github.com/fiatjaf/lightningd-gjson-rpc v0.1.0/go.mod h1:l9/F6w1UOkUrgyO0iH+kO81+ts0IpUoOhXUnAvSU25I=
 github.com/fiatjaf/lightningd-gjson-rpc v0.1.1-0.20191204225807-4e73275bc053 h1:WhIcj/0EM0gGLULzLcadJOAJcwtu/FnIXpRc99tk9rg=
@@ -160,10 +162,14 @@ github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJy
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/tidwall/gjson v1.3.5 h1:2oW9FBNu8qt9jy5URgrzsVx/T/KSn3qn/smJQ0crlDQ=
 github.com/tidwall/gjson v1.3.5/go.mod h1:P256ACg0Mn+j1RXIDXoss50DeIABTYK1PULOJHhxOls=
+github.com/tidwall/gjson v1.5.0 h1:QCssIUI7J0RStkzIcI4A7O6P8rDA5wi5IPf70uqKSxg=
+github.com/tidwall/gjson v1.5.0/go.mod h1:P256ACg0Mn+j1RXIDXoss50DeIABTYK1PULOJHhxOls=
 github.com/tidwall/match v1.0.1 h1:PnKP62LPNxHKTwvHHZZzdOAOCtsJTjo6dZLCwpKm5xc=
 github.com/tidwall/match v1.0.1/go.mod h1:LujAq0jyVjBy028G1WhWfIzbpQfMO8bBZ6Tyb0+pL9E=
 github.com/tidwall/pretty v1.0.0 h1:HsD+QiTn7sK6flMKIvNmpqz1qrpP3Ps6jOKIKMooyg4=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
+github.com/tidwall/pretty v1.0.1 h1:WE4RBSZ1x6McVVC8S/Md+Qse8YUv6HRObAx6ke00NY8=
+github.com/tidwall/pretty v1.0.1/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/tidwall/sjson v1.0.4 h1:UcdIRXff12Lpnu3OLtZvnc03g4vH2suXDXhBwBqmzYg=
 github.com/tidwall/sjson v1.0.4/go.mod h1:bURseu1nuBkFpIES5cz6zBtjmYeOQmEESshn7VpF15Y=
 github.com/tv42/zbase32 v0.0.0-20160707012821-501572607d02/go.mod h1:tHlrkM198S068ZqfrO6S8HsoJq2bF3ETfTL+kt4tInY=

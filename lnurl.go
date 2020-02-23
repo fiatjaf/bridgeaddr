@@ -67,7 +67,8 @@ func lnurlValues(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(lnurl.LNURLPayResponse2{
 		LNURLResponse: lnurl.LNURLResponse{Status: "OK"},
 		PR:            bolt11,
-		SuccessAction: lnurl.Action("Tip received!", ""),
+		SuccessAction: lnurl.Action("Payment received!", ""),
 		Routes:        make([][]lnurl.RouteInfo, 0),
+		Disposable:    false,
 	})
 }
