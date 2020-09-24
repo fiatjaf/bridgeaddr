@@ -58,7 +58,7 @@ func makeInvoice(nodeid, kind, jdata string, msat int) (bolt11 string, err error
 		inv, err := spark.Call("invoicewithdescriptionhash", msat, "tip.bigsun.xyz/"+cuid.Slug(), hexh)
 		fmt.Println(msat, "tip.bigsun.xyz/"+cuid.Slug(), hexh)
 		if err != nil {
-			return "", fmt.Errorf("lnurlinvoice call failed: %w", err)
+			return "", fmt.Errorf("invoicewithdescriptionhash call failed: %w", err)
 		}
 		return inv.Get("bolt11").String(), nil
 

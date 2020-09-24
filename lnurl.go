@@ -69,6 +69,6 @@ func lnurlValues(w http.ResponseWriter, r *http.Request) {
 		PR:            bolt11,
 		SuccessAction: lnurl.Action("Payment received!", ""),
 		Routes:        make([][]lnurl.RouteInfo, 0),
-		Disposable:    false,
+		Disposable:    lnurl.FALSE,
 	})
 }
