@@ -7,6 +7,7 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -20,8 +21,22 @@ import (
 )
 
 func getMetadata(nodeid string) string {
+	var alias string
+	resp, err := http.Get(
+		"https://ln.bigsun.xyz/api/nodes?select=alias&pubkey=eq." + nodeid)
+	if err == nil {
+		defer resp.Body.Close()
+		var v []struct {
+			Alias string `json:"alias"`
+		}
+		json.NewDecoder(resp.Body).Decode(&v)
+		if len(v) == 1 {
+			alias = " (" + v[0].Alias + ")"
+		}
+	}
+
 	metadata, _ := sjson.Set("[]", "0.0", "text/plain")
-	metadata, _ = sjson.Set(metadata, "0.1", "An arbitrary payment to the Lightning node "+nodeid+" proxied by https://tip.bigsun.xyz/.")
+	metadata, _ = sjson.Set(metadata, "0.1", "Paying "+nodeid+alias+" proxied by https://tip.bigsun.xyz/.")
 	return metadata
 }
 
