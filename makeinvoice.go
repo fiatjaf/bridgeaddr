@@ -7,49 +7,74 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
+	"strconv"
 	"time"
 
 	lightning "github.com/fiatjaf/lightningd-gjson-rpc"
-	"github.com/lucsky/cuid"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )
 
-func getMetadata(nodeid string) string {
-	var alias string
-	resp, err := http.Get(
-		"https://ln.bigsun.xyz/api/nodes?select=alias&pubkey=eq." + nodeid)
-	if err == nil {
-		defer resp.Body.Close()
-		var v []struct {
-			Alias string `json:"alias"`
-		}
-		json.NewDecoder(resp.Body).Decode(&v)
-		if len(v) == 1 {
-			alias = " (" + v[0].Alias + ")"
-		}
+func makeMetadata(username, domain string) string {
+	metadata, _ := sjson.Set("[]", "0.0", "text/identifier")
+	metadata, _ = sjson.Set(metadata, "0.1", username+"@"+domain)
+
+	metadata, _ = sjson.Set(metadata, "1.0", "text/plain")
+	if v, err := net.LookupTXT("_description." + domain); err == nil && len(v) > 0 {
+		metadata, _ = sjson.Set(metadata, "1.1", v[0])
+	} else {
+		metadata, _ = sjson.Set(metadata, "1.1", "Satoshis to "+username+"@"+domain+".")
 	}
 
-	metadata, _ := sjson.Set("[]", "0.0", "text/plain")
-	metadata, _ = sjson.Set(metadata, "0.1", "Paying "+nodeid+alias+" proxied by https://tip.bigsun.xyz/.")
+	if v, err := net.LookupTXT("_image." + domain); err == nil && len(v) > 0 {
+		if b64, err := base64ImageFromURL(v[0]); err == nil {
+			metadata, _ = sjson.Set(metadata, "2.0", "image/jpeg;base64")
+			metadata, _ = sjson.Set(metadata, "2.1", b64)
+		}
+	}
 	return metadata
 }
 
-func makeInvoice(nodeid, kind, jdata string, msat int) (bolt11 string, err error) {
-	data := gjson.Parse(jdata)
-
+func makeInvoice(username, domain string, msat int) (bolt11 string, err error) {
 	defer func(prevTransport http.RoundTripper) {
 		http.DefaultClient.Transport = prevTransport
 	}(http.DefaultClient.Transport)
-	if data.Get("cert").Exists() {
-		caCertPool := x509.NewCertPool()
-		caCertPool.AppendCertsFromPEM([]byte(data.Get("cert").String()))
 
+	// grab all the necessary data from DNS
+	var (
+		kind     string
+		cert     string
+		host     string
+		key      string
+		macaroon string
+	)
+	if v, err := net.LookupTXT("_kind." + domain); err == nil && len(v) > 0 {
+		kind = v[0]
+	} else {
+		return "", errors.New("missing kind")
+	}
+	if v, err := net.LookupTXT("_cert." + domain); err == nil && len(v) > 0 {
+		cert = v[0]
+	}
+	if v, err := net.LookupTXT("_host." + domain); err == nil && len(v) > 0 {
+		host = v[0]
+	}
+	if v, err := net.LookupTXT("_key." + domain); err == nil && len(v) > 0 {
+		key = v[0]
+	}
+	if v, err := net.LookupTXT("_macaroon." + domain); err == nil && len(v) > 0 {
+		macaroon = v[0]
+	}
+
+	// use a cert or skip TLS verification?
+	if cert != "" {
+		caCertPool := x509.NewCertPool()
+		caCertPool.AppendCertsFromPEM([]byte(cert))
 		http.DefaultClient.Transport = &http.Transport{
 			TLSClientConfig: &tls.Config{RootCAs: caCertPool},
 		}
@@ -59,19 +84,21 @@ func makeInvoice(nodeid, kind, jdata string, msat int) (bolt11 string, err error
 		}
 	}
 
-	h := sha256.Sum256([]byte(getMetadata(nodeid)))
+	// prepare these things
+	h := sha256.Sum256([]byte(makeMetadata(username, domain)))
 	hexh := hex.EncodeToString(h[:])
 	b64h := base64.StdEncoding.EncodeToString(h[:])
 
+	// actually generate the invoice
 	switch kind {
 	case "sparko":
 		spark := &lightning.Client{
-			SparkURL:    data.Get("endpoint").String(),
-			SparkToken:  data.Get("key").String(),
+			SparkURL:    host,
+			SparkToken:  key,
 			CallTimeout: time.Second * 3,
 		}
-		inv, err := spark.Call("invoicewithdescriptionhash", msat, "tip.bigsun.xyz/"+cuid.Slug(), hexh)
-		fmt.Println(msat, "tip.bigsun.xyz/"+cuid.Slug(), hexh)
+		inv, err := spark.Call("invoicewithdescriptionhash", msat,
+			"lightningaddr/"+strconv.FormatInt(time.Now().Unix(), 16), hexh)
 		if err != nil {
 			return "", fmt.Errorf("invoicewithdescriptionhash call failed: %w", err)
 		}
@@ -82,15 +109,15 @@ func makeInvoice(nodeid, kind, jdata string, msat int) (bolt11 string, err error
 		body, _ = sjson.Set(body, "value", msat/1000)
 
 		req, err := http.NewRequest("POST",
-			data.Get("endpoint").String()+"/v1/invoices",
+			host+"/v1/invoices",
 			bytes.NewBufferString(body),
 		)
 		if err != nil {
 			return "", err
 		}
 
-		req.Header.Set("Grpc-Metadata-macaroon", data.Get("macaroon").String())
-		resp, err := http.DefaultClient.Do(req)
+		req.Header.Set("Grpc-Metadata-macaroon", macaroon)
+		resp, err := (&http.Client{Timeout: 25 * time.Second}).Do(req)
 		if err != nil {
 			return "", err
 		}
@@ -105,6 +132,8 @@ func makeInvoice(nodeid, kind, jdata string, msat int) (bolt11 string, err error
 		}
 
 		return gjson.ParseBytes(b).Get("payment_request").String(), nil
+	case "lnpay":
+	case "lnbits":
 	}
 
 	return "", errors.New("unsupported lightning server kind: " + kind)
