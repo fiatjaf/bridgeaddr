@@ -37,8 +37,9 @@ func main() {
 	router.Path("/.well-known/lnurlp/{username}").Methods("GET").
 		HandlerFunc(handleLNURL)
 
-	router.Host(strings.Split(s.ServiceURL, "://")[1]).PathPrefix("/").HandlerFunc(
+	router.Host(strings.Split(s.ServiceURL, "://")[1]).Path("/").HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("content-type", "text/html")
 			fmt.Fprintf(w, readme+`<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>`)
 		},
 	)
