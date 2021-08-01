@@ -60,16 +60,17 @@ func handleLNURL(w http.ResponseWriter, r *http.Request) {
 			SuccessAction: lnurl.Action("Payment received!", ""),
 		})
 
-		// handle comments by sending them to a specified webhook
+		// send webhook
 		go func() {
-			if comment := r.URL.Query().Get("comment"); comment != "" {
-				if v, err := net.LookupTXT("_webhook." + domain); err == nil && len(v) > 0 {
-					body, _ := sjson.Set("{}", "comment", comment)
-					body, _ = sjson.Set(body, "pr", bolt11)
-					body, _ = sjson.Set(body, "amount", msat)
-					(&http.Client{Timeout: 5 * time.Second}).
-						Post(v[0], "application/json", bytes.NewBufferString(body))
+			if v, err := net.LookupTXT("_webhook." + domain); err == nil && len(v) > 0 {
+				body, _ := sjson.Set("{}", "pr", bolt11)
+				body, _ = sjson.Set(body, "amount", msat)
+				if comment := r.URL.Query().Get("comment"); comment != "" {
+					body, _ = sjson.Set(body, "comment", comment)
 				}
+
+				(&http.Client{Timeout: 5 * time.Second}).
+					Post(v[0], "application/json", bytes.NewBufferString(body))
 			}
 		}()
 	}
