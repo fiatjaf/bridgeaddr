@@ -34,8 +34,8 @@ func main() {
 		log.Fatal().Err(err).Msg("couldn't process envconfig.")
 	}
 
-	router.Path("/.well-known/lnurlp/{username}").Methods("GET").HandlerFunc(lnurlParams)
-	router.Path("/lnurl/{username}").Methods("GET").HandlerFunc(lnurlValues)
+	router.Path("/.well-known/lnurlp/{username}").Methods("GET").
+		HandlerFunc(handleLNURL)
 
 	router.Host(strings.Split(s.ServiceURL, "://")[1]).PathPrefix("/").HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
