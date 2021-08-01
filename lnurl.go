@@ -16,7 +16,7 @@ import (
 
 func handleLNURL(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
-	domain := r.Header.Get("Host")
+	domain := r.Host
 
 	log.Info().Str("username", username).Str("domain", domain).
 		Msg("got lnurl request")
