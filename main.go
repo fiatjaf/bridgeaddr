@@ -44,6 +44,8 @@ func main() {
 		},
 	)
 
+	router.PathPrefix("/").Methods("GET").HandlerFunc(redirect)
+
 	srv := &http.Server{
 		Handler:      router,
 		Addr:         s.Host + ":" + s.Port,

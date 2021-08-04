@@ -33,6 +33,8 @@ TXT _host.domain.com -> http(s)://your-ip-or-whatever.com
 TXT _macaroon.domain.com -> macaroon_as_base64
 ```
 
+**Done.** Now you can receive payments at `any_name@domain.com`.
+
 ### Optional extras:
 
 If you want to specify a description for the wallet payment screen:
@@ -57,4 +59,9 @@ If you use a self-signed certificate and want that to be checked:
 TXT _cert.domain.com -> -----BEGIN CERTIFICATE----- MIQT...TQIM -----END CERTIFICATE-----
 ```
 
-Now you can receive payments at `any_name@domain.com`.
+If you want to reuse the domain root to redirect to elsewhere (maybe to the `www.` subdomain?):
+```
+TXT _redirect.domain.com -> Redirects to https://somewhere.else
+```
+
+The syntax for these redirects is exactly the same as in [redirect.name](http://redirect.name).
