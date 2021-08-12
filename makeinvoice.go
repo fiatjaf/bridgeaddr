@@ -98,7 +98,7 @@ func makeInvoice(username, domain string, msat int) (bolt11 string, err error) {
 			CallTimeout: time.Second * 3,
 		}
 		inv, err := spark.Call("invoicewithdescriptionhash", msat,
-			"lightningaddr/"+strconv.FormatInt(time.Now().Unix(), 16), hexh)
+			"lightningaddr/"+strconv.FormatInt(time.Now().UnixNano(), 16), hexh)
 		if err != nil {
 			return "", fmt.Errorf("invoicewithdescriptionhash call failed: %w", err)
 		}
