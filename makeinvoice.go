@@ -2,11 +2,10 @@ package main
 
 import (
 	"crypto/sha256"
-	"crypto/tls"
-	"crypto/x509"
 	"errors"
 	"net"
-	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/fiatjaf/makeinvoice"
 	"github.com/tidwall/sjson"
@@ -33,10 +32,6 @@ func makeMetadata(username, domain string) string {
 }
 
 func makeInvoice(username, domain string, msat int) (bolt11 string, err error) {
-	defer func(prevTransport http.RoundTripper) {
-		http.DefaultClient.Transport = prevTransport
-	}(http.DefaultClient.Transport)
-
 	// grab all the necessary data from DNS
 	var (
 		kind     string
@@ -61,19 +56,6 @@ func makeInvoice(username, domain string, msat int) (bolt11 string, err error) {
 	}
 	if v, err := net.LookupTXT("_macaroon." + domain); err == nil && len(v) > 0 {
 		macaroon = v[0]
-	}
-
-	// use a cert or skip TLS verification?
-	if cert != "" {
-		caCertPool := x509.NewCertPool()
-		caCertPool.AppendCertsFromPEM([]byte(cert))
-		http.DefaultClient.Transport = &http.Transport{
-			TLSClientConfig: &tls.Config{RootCAs: caCertPool},
-		}
-	} else {
-		http.DefaultClient.Transport = &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
 	}
 
 	// description_hash
@@ -107,5 +89,7 @@ func makeInvoice(username, domain string, msat int) (bolt11 string, err error) {
 		Msatoshi:        int64(msat),
 		DescriptionHash: h[:],
 		Backend:         backend,
+
+		Label: "lightningaddr/" + strconv.FormatInt(time.Now().Unix(), 16),
 	})
 }

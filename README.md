@@ -1,7 +1,7 @@
 lightningaddr
 =============
 
-A server that allows you to receive payments at `yourname@yourdomain.com` noncustodially.
+A bridge server that allows you to receive payments at `yourname@yourdomain.com` noncustodially.
 
 It will serve the necessary JSON and then use RPC calls to connect to your node and fetch invoices on demand.
 
