@@ -1,22 +1,14 @@
 package main
 
 import (
-	"bytes"
 	"crypto/sha256"
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/base64"
-	"encoding/hex"
 	"errors"
-	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
-	"strconv"
-	"time"
 
-	lightning "github.com/fiatjaf/lightningd-gjson-rpc"
-	"github.com/tidwall/gjson"
+	"github.com/fiatjaf/makeinvoice"
 	"github.com/tidwall/sjson"
 )
 
@@ -84,57 +76,36 @@ func makeInvoice(username, domain string, msat int) (bolt11 string, err error) {
 		}
 	}
 
-	// prepare these things
+	// description_hash
 	h := sha256.Sum256([]byte(makeMetadata(username, domain)))
-	hexh := hex.EncodeToString(h[:])
-	b64h := base64.StdEncoding.EncodeToString(h[:])
 
-	// actually generate the invoice
+	// prepare params
+	var backend makeinvoice.BackendParams
 	switch kind {
 	case "sparko":
-		spark := &lightning.Client{
-			SparkURL:    host,
-			SparkToken:  key,
-			CallTimeout: time.Second * 3,
+		backend = makeinvoice.SparkoParams{
+			Cert: cert,
+			Host: host,
+			Key:  key,
 		}
-		inv, err := spark.Call("invoicewithdescriptionhash", msat,
-			"lightningaddr/"+strconv.FormatInt(time.Now().UnixNano(), 16), hexh)
-		if err != nil {
-			return "", fmt.Errorf("invoicewithdescriptionhash call failed: %w", err)
-		}
-		return inv.Get("bolt11").String(), nil
-
 	case "lnd":
-		body, _ := sjson.Set("{}", "description_hash", b64h)
-		body, _ = sjson.Set(body, "value", msat/1000)
-
-		req, err := http.NewRequest("POST",
-			host+"/v1/invoices",
-			bytes.NewBufferString(body),
-		)
-		if err != nil {
-			return "", err
+		backend = makeinvoice.LNDParams{
+			Cert:     cert,
+			Host:     host,
+			Macaroon: macaroon,
 		}
-
-		req.Header.Set("Grpc-Metadata-macaroon", macaroon)
-		resp, err := (&http.Client{Timeout: 25 * time.Second}).Do(req)
-		if err != nil {
-			return "", err
-		}
-		if resp.StatusCode >= 300 {
-			return "", errors.New("call to lnd failed")
-		}
-
-		defer resp.Body.Close()
-		b, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return "", err
-		}
-
-		return gjson.ParseBytes(b).Get("payment_request").String(), nil
-	case "lnpay":
 	case "lnbits":
+		backend = makeinvoice.LNBitsParams{
+			Cert: cert,
+			Host: host,
+			Key:  key,
+		}
 	}
 
-	return "", errors.New("unsupported lightning server kind: " + kind)
+	// actually generate the invoice
+	return makeinvoice.MakeInvoice(makeinvoice.Params{
+		Msatoshi:        int64(msat),
+		DescriptionHash: h[:],
+		Backend:         backend,
+	})
 }

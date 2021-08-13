@@ -1,4 +1,5 @@
-# lightningaddr
+lightningaddr
+=============
 
 A server that allows you to receive payments at `yourname@yourdomain.com` noncustodially.
 
@@ -10,6 +11,7 @@ You don't have to do anything besides buying a domain and setting up some DNS re
 
   - Sparko
   - LND
+  - LNbits
 
 ## Setup Guide
 
@@ -33,9 +35,20 @@ TXT _host.domain.com -> http(s)://your-ip-or-whatever.com
 TXT _macaroon.domain.com -> macaroon_as_base64
 ```
 
+### To use with LNbits:
+```
+TXT _kind.domain.com -> lnbits
+TXT _host.domain.com -> http(s)://your-ip-or-whatever.com
+TXT _key.domain.com -> lnbits_invoice_key
+```
+
 **Done.** Now you can receive payments at `any_name@domain.com`.
 
-### Optional extras:
+## Warning
+
+DNS records are public. Only put "invoice" keys there, never "payment"/"admin" keys.
+
+## Optional extras:
 
 If you want to specify a description for the wallet payment screen:
 ```
