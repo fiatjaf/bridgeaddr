@@ -39,6 +39,8 @@ func makeInvoice(username, domain string, msat int) (bolt11 string, err error) {
 		host     string
 		key      string
 		macaroon string
+		pak      string
+		waki     string
 	)
 	if v, err := net.LookupTXT("_kind." + domain); err == nil && len(v) > 0 {
 		kind = v[0]
@@ -51,13 +53,6 @@ func makeInvoice(username, domain string, msat int) (bolt11 string, err error) {
 	if v, err := net.LookupTXT("_host." + domain); err == nil && len(v) > 0 {
 		host = v[0]
 	}
-	if v, err := net.LookupTXT("_key." + domain); err == nil && len(v) > 0 {
-		key = v[0]
-	}
-	if v, err := net.LookupTXT("_macaroon." + domain); err == nil && len(v) > 0 {
-		macaroon = v[0]
-	}
-
 	// description_hash
 	h := sha256.Sum256([]byte(makeMetadata(username, domain)))
 
@@ -65,22 +60,47 @@ func makeInvoice(username, domain string, msat int) (bolt11 string, err error) {
 	var backend makeinvoice.BackendParams
 	switch kind {
 	case "sparko":
+		if v, err := net.LookupTXT("_key." + domain); err == nil && len(v) > 0 {
+			key = v[0]
+		}
+
 		backend = makeinvoice.SparkoParams{
 			Cert: cert,
 			Host: host,
 			Key:  key,
 		}
 	case "lnd":
+		if v, err := net.LookupTXT("_macaroon." + domain); err == nil && len(v) > 0 {
+			macaroon = v[0]
+		}
+
 		backend = makeinvoice.LNDParams{
 			Cert:     cert,
 			Host:     host,
 			Macaroon: macaroon,
 		}
 	case "lnbits":
+		if v, err := net.LookupTXT("_key." + domain); err == nil && len(v) > 0 {
+			key = v[0]
+		}
+
 		backend = makeinvoice.LNBitsParams{
 			Cert: cert,
 			Host: host,
 			Key:  key,
+		}
+	case "lnpay":
+		if v, err := net.LookupTXT("_pak." + domain); err == nil && len(v) > 0 {
+			pak = v[0]
+		}
+
+		if v, err := net.LookupTXT("_waki." + domain); err == nil && len(v) > 0 {
+			waki = v[0]
+		}
+
+		backend = makeinvoice.LNPayParams{
+			PublicAccessKey:  pak,
+			WalletInvoiceKey: waki,
 		}
 	}
 

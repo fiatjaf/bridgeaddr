@@ -12,6 +12,7 @@ You don't have to do anything besides buying a domain and setting up some DNS re
 
   - Sparko
   - LND
+  - LNPay
   - LNbits
 
 # Setup Guide
@@ -44,6 +45,15 @@ It is better to _bake_ a new macaroon with a single authorization to create invo
 
 The host value here must be the address and port to your REST API, not your gRPC API nor your Lightning connection port.
 
+## To use with [LNPay](https://lnpay.co/):
+
+| Record | Domain Name      | Value        |
+|--------|------------------|--------------|
+| TXT    | _pak.domain.com  | pak_oooooooo |
+| TXT    | _waki.domain.com | waki_ooooooo |
+
+See [keys docs](https://docs.lnpay.co/api/get-started/access-keys) for what "pak" and "waki" mean.
+
 ## To use with LNbits:
 
 | Record | Domain Name      | Value                             |
@@ -52,15 +62,19 @@ The host value here must be the address and port to your REST API, not your gRPC
 | TXT    | _host.domain.com | http(s)://lnbits-ip-or-domain.com |
 | TXT    | _key.domain.com  | lnbits_invoice_key                |
 
-And it's **done.** Now you can receive payments at `any_name@domain.com`.
+---
+
+Just setup the records above and it's **done.** Now you can receive payments at `any_name@domain.com`.
 
 # Warning
 
 DNS records are public. Only put "invoice" keys there, never "payment"/"admin" keys.
 
-# .onion addresses, Tor, ZeroTier
+# IPv6, .onion addresses, Tor, ZeroTier
 
 If your node is listening on Tor, no problem, you can just use .onion addresses on the `_host` entry normally.
+
+Some people have static IPv6 addresses pointing directly to their machines (instead of to their home router). You can use these directly.
 
 If your node doesn't have a public address and it is also not listening on Tor, you can use https://zerotier.com/. It is very easy. Just download it, install it and join the public network `a0cbf4b62a1e645f`, then use the IP you'll be assigned and we will be able to connect.
 
