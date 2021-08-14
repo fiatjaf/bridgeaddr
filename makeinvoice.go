@@ -90,6 +90,6 @@ func makeInvoice(username, domain string, msat int) (bolt11 string, err error) {
 		DescriptionHash: h[:],
 		Backend:         backend,
 
-		Label: "lightningaddr/" + strconv.FormatInt(time.Now().Unix(), 16),
+		Label: "bridgeaddr/" + strconv.FormatInt(time.Now().Unix(), 16),
 	})
 }

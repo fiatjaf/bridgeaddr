@@ -1,8 +1,6 @@
-module github.com/fiatjaf/lightningaddr
+module github.com/fiatjaf/bridgeaddr
 
 go 1.16
-
-replace github.com/fiatjaf/go-lnurl => /home/fiatjaf/comp/go-lnurl
 
 require (
 	github.com/fiatjaf/go-lnurl v1.4.0

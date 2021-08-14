@@ -2,4 +2,4 @@
 *.swo
 *.yaml
 *.env
-lightningaddr
+bridgeaddr

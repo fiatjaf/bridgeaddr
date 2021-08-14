@@ -1,7 +1,7 @@
-lightningaddr: $(shell find . -name "*.go")
-	go build -ldflags="-s -w" -o ./lightningaddr
+bridgeaddr: $(shell find . -name "*.go")
+	go build -ldflags="-s -w" -o ./bridgeaddr
 
-deploy: lightningaddr
-	ssh root@hulsmann 'systemctl stop lightningaddr'
-	scp lightningaddr hulsmann:lightningaddr/lightningaddr
-	ssh root@hulsmann 'systemctl start lightningaddr'
+deploy: bridgeaddr
+	ssh root@hulsmann 'systemctl stop bridgeaddr'
+	scp bridgeaddr hulsmann:bridgeaddr/bridgeaddr
+	ssh root@hulsmann 'systemctl start bridgeaddr'
