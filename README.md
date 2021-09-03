@@ -19,9 +19,9 @@ You don't have to do anything besides buying a domain and setting up some DNS re
 
 Considering you own the `domain.com` domain, you need to set up these DNS records:
 
-| Record | Domain Name | Value     |
-|--------|-------------|-----------|
-| A      | domain.com  | 5.2.67.89 |
+| Record | Domain Name | Value                  |
+|--------|-------------|------------------------|
+| CNAME  | domain.com  | bridgeaddr.fiatjaf.com |
 
 ## To use with c-lightning and [Sparko](https://github.com/fiatjaf/sparko):
 
@@ -92,7 +92,7 @@ If you want to specify an image for the wallet payment screen:
 |--------|-------------------|----------------------|
 | TXT    | _image.domain.com | https://url.to/image |
 
-If you want to receive comments or payment notifications:
+If you want to receive comments or payment notifications (if you don't know where to send these, I recommend https://t.me/incomingnotificationsbot or https://pipedream.com/):
 
 | Record | Domain Name         | Value                          |
 |--------|---------------------|--------------------------------|
