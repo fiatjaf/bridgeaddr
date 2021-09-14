@@ -10,8 +10,9 @@ You don't have to do anything besides buying a domain and setting up some DNS re
 
 # Supported Lightning Backends
 
-  - Sparko
   - LND
+  - Eclair
+  - Sparko
   - LNPay
   - LNbits
 
@@ -22,16 +23,6 @@ Considering you own the `domain.com` domain, you need to set up these DNS record
 | Record | Domain Name | Value                  |
 |--------|-------------|------------------------|
 | CNAME  | domain.com  | bridgeaddr.fiatjaf.com |
-
-## To use with c-lightning and [Sparko](https://github.com/fiatjaf/sparko):
-
-| Record | Domain Name      | Value                                                    |
-|--------|------------------|----------------------------------------------------------|
-| TXT    | _kind.domain.com | sparko                                                   |
-| TXT    | _host.domain.com | http(s)://sparko-ip-or-domain.com                        |
-| TXT    | _key.domain.com  | key_with_permission_to_method_invoicewithdescriptionhash |
-
-By default, your Sparko host will be something like http://your.ip:9737.
 
 ## To use with LND:
 
@@ -44,6 +35,24 @@ By default, your Sparko host will be something like http://your.ip:9737.
 It is better to _bake_ a new macaroon with a single authorization to create invoices and nothing else. If you don't know how to do that it's fine to get the built-in "invoices" macaroon.
 
 The host value here must be the address and port to your REST API, not your gRPC API nor your Lightning connection port.
+
+## To use with Eclair:
+
+| Record | Domain Name      | Value                                                    |
+|--------|------------------|-----------------------------|
+| TXT    | _host.domain.com | http(s)://eclair-domain.com |
+
+Follow [instructions here](https://gist.github.com/fiatjaf/8e74740d30763713154de15562e08789#file-exposing-eclair-md) on how to properly expose your Eclair to the external world.
+
+## To use with c-lightning and [Sparko](https://github.com/fiatjaf/sparko):
+
+| Record | Domain Name      | Value                                                    |
+|--------|------------------|----------------------------------------------------------|
+| TXT    | _kind.domain.com | sparko                                                   |
+| TXT    | _host.domain.com | http(s)://sparko-ip-or-domain.com                        |
+| TXT    | _key.domain.com  | key_with_permission_to_method_invoicewithdescriptionhash |
+
+By default, your Sparko host will be something like http://your.ip:9737.
 
 ## To use with [LNPay](https://lnpay.co/):
 

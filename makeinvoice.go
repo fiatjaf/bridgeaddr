@@ -69,6 +69,11 @@ func makeInvoice(username, domain string, msat int) (bolt11 string, err error) {
 			Host: host,
 			Key:  key,
 		}
+	case "eclair":
+		backend = makeinvoice.EclairParams{
+			Cert: cert,
+			Host: host,
+		}
 	case "lnd":
 		if v, err := net.LookupTXT("_macaroon." + domain); err == nil && len(v) > 0 {
 			macaroon = v[0]
