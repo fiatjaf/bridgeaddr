@@ -41,6 +41,10 @@ func getRedirect(txt []string, url string) (*redirectValue, error) {
 	var catchAlls []*redirectConfig
 	for _, record := range txt {
 		config := parseRedirect(record)
+		if config == nil {
+			continue
+		}
+
 		if config.From == "" {
 			catchAlls = append(catchAlls, config)
 			continue
