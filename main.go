@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/fiatjaf/makeinvoice"
 	"github.com/gorilla/mux"
 	"github.com/kelseyhightower/envconfig"
 	_ "github.com/lib/pq"
@@ -33,6 +34,9 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("couldn't process envconfig.")
 	}
+
+	// increase default makeinvoice client timeout because people are using tor
+	makeinvoice.Client = &http.Client{Timeout: 25 * time.Second}
 
 	router.Path("/.well-known/lnurlp/{username}").Methods("GET").
 		HandlerFunc(handleLNURL)
