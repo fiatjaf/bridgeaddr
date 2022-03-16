@@ -13,6 +13,7 @@ You don't have to do anything besides buying a domain and setting up some DNS re
   - LND
   - Eclair
   - Sparko
+  - Commando
   - LNPay
   - LNbits
 
@@ -38,9 +39,9 @@ The host value here must be the address and port to your REST API, not your gRPC
 
 ## To use with Eclair:
 
-| Record | Domain Name      | Value                                                    |
-|--------|------------------|-----------------------------|
-| TXT    | _host.domain.com | http(s)://eclair-domain.com |
+| Record   | Domain Name        | Value                         |
+| -------- | ------------------ | ----------------------------- |
+| TXT      | _host.domain.com   | http(s)://eclair-domain.com   |
 
 Follow [instructions here](https://gist.github.com/fiatjaf/8e74740d30763713154de15562e08789#file-exposing-eclair-md) on how to properly expose your Eclair to the external world.
 
@@ -53,6 +54,15 @@ Follow [instructions here](https://gist.github.com/fiatjaf/8e74740d30763713154de
 | TXT    | _key.domain.com  | key_with_permission_to_method_invoicewithdescriptionhash |
 
 By default, your Sparko host will be something like http://your.ip:9737.
+
+## To use with c-lightning and [Commando](https://github.com/lightningd/plugins/tree/master/commando):
+
+| Record   | Domain Name        | Value                       |
+| -------- | ------------------ | --------------------------- |
+| TXT      | _kind.domain.com   | commando                    |
+| TXT      | _host.domain.com   | node.ip.plus.port:9735      |
+| TXT      | _nodeid.domain.com | nodeidlike_02c16cca44562... |
+| TXT      | _rune.domain.com   | runeasbase64                |
 
 ## To use with [LNPay](https://lnpay.co/):
 

@@ -41,6 +41,8 @@ func makeInvoice(username, domain string, msat int) (bolt11 string, err error) {
 		macaroon string
 		pak      string
 		waki     string
+		nodeid   string
+		rune_    string
 	)
 	if v, err := net.LookupTXT("_kind." + domain); err == nil && len(v) > 0 {
 		kind = v[0]
@@ -68,6 +70,19 @@ func makeInvoice(username, domain string, msat int) (bolt11 string, err error) {
 			Cert: cert,
 			Host: host,
 			Key:  key,
+		}
+	case "commando":
+		if v, err := net.LookupTXT("_nodeid." + domain); err == nil && len(v) > 0 {
+			nodeid = v[0]
+		}
+		if v, err := net.LookupTXT("_rune." + domain); err == nil && len(v) > 0 {
+			rune_ = v[0]
+		}
+
+		backend = makeinvoice.CommandoParams{
+			Host:   host,
+			NodeId: nodeid,
+			Rune:   rune_,
 		}
 	case "eclair":
 		backend = makeinvoice.EclairParams{
