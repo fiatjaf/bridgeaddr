@@ -2,7 +2,7 @@
             **bridgeaddr**
   bridge server for lightning addresses
 
-This is a server that allows you to receive payments at `yourname@yourdomain.com` noncustodially.
+This is a server that allows you to receive payments at `yourname@yourdomain.com` noncustodially (but not fully trustlessly[^trustless]).
 
 It will serve the necessary JSON and then use RPC calls to connect to your node and fetch invoices on demand.
 
@@ -130,3 +130,7 @@ If you want to reuse the domain root to redirect arbitrary pages to elsewhere (m
 | Record | Domain Name          | Value                               |
 |--------|----------------------|-------------------------------------|
 | TXT    | _redirect.domain.com | Redirects to https://somewhere.else |
+
+---
+
+[^trustless]: bridgeaddr requires you to trust that the server won't just show their invoice instead of yours when someone tries to send you money. The server can do that and effectively steal the payments you receive until you notice that. It cannot however touch the money you have on your wallet ever.
