@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/sha256"
 	"errors"
 	"net"
 	"strconv"
@@ -55,8 +54,6 @@ func makeInvoice(username, domain string, msat int) (bolt11 string, err error) {
 	if v, err := net.LookupTXT("_host." + domain); err == nil && len(v) > 0 {
 		host = v[0]
 	}
-	// description_hash
-	h := sha256.Sum256([]byte(makeMetadata(username, domain)))
 
 	// prepare params
 	var backend makeinvoice.BackendParams
@@ -126,9 +123,10 @@ func makeInvoice(username, domain string, msat int) (bolt11 string, err error) {
 
 	// actually generate the invoice
 	return makeinvoice.MakeInvoice(makeinvoice.Params{
-		Msatoshi:        int64(msat),
-		DescriptionHash: h[:],
-		Backend:         backend,
+		Msatoshi:           int64(msat),
+		Description:        makeMetadata(username, domain),
+		UseDescriptionHash: true,
+		Backend:            backend,
 
 		Label: "bridgeaddr/" + strconv.FormatInt(time.Now().Unix(), 16),
 	})
