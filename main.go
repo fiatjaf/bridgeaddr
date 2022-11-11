@@ -11,7 +11,6 @@ import (
 	"github.com/fiatjaf/makeinvoice"
 	"github.com/gorilla/mux"
 	"github.com/kelseyhightower/envconfig"
-	_ "github.com/lib/pq"
 	"github.com/rs/zerolog"
 )
 
@@ -21,10 +20,12 @@ type Settings struct {
 	ServiceURL string `envconfig:"SERVICE_URL" required:"true"`
 }
 
-var err error
-var s Settings
-var router = mux.NewRouter()
-var log = zerolog.New(os.Stderr).Output(zerolog.ConsoleWriter{Out: os.Stderr})
+var (
+	err    error
+	s      Settings
+	router = mux.NewRouter()
+	log    = zerolog.New(os.Stderr).Output(zerolog.ConsoleWriter{Out: os.Stderr})
+)
 
 //go:embed README.md
 var readme string
