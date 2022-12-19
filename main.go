@@ -39,6 +39,11 @@ func main() {
 	// increase default makeinvoice client timeout because people are using tor
 	makeinvoice.Client = &http.Client{Timeout: 25 * time.Second}
 
+	// this is here so caddy can call it and validate new certificate requests
+	router.Path("/domain-validate").Methods("GET").
+		HandlerFunc(handleDomainValidate)
+
+		// the core endpoint that handles lightning address calls
 	router.Path("/.well-known/lnurlp/{username}").Methods("GET").
 		HandlerFunc(handleLNURL)
 
