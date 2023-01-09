@@ -15,9 +15,10 @@ import (
 )
 
 type Settings struct {
-	Host       string `envconfig:"HOST" default:"0.0.0.0"`
-	Port       string `envconfig:"PORT" required:"true"`
-	ServiceURL string `envconfig:"SERVICE_URL" required:"true"`
+	Host             string `envconfig:"HOST" default:"0.0.0.0"`
+	Port             string `envconfig:"PORT" required:"true"`
+	ServiceURL       string `envconfig:"SERVICE_URL" required:"true"`
+	SafeDomainSuffix string `envconfig:"SAFE_DOMAIN_SUFFIX"`
 }
 
 var (

@@ -14,6 +14,11 @@ func handleDomainValidate(w http.ResponseWriter, r *http.Request) {
 	domain := r.URL.Query().Get("domain")
 	log := log.With().Str("domain", domain).Logger()
 
+	if s.SafeDomainSuffix != "" && strings.HasSuffix(domain, s.SafeDomainSuffix) {
+		w.WriteHeader(200)
+		return
+	}
+
 	effective, err := publicsuffix.EffectiveTLDPlusOne(domain)
 	if err != nil {
 		log.Warn().Err(err).Msg("failed to parse effective tld")
