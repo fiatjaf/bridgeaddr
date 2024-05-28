@@ -14,6 +14,8 @@ import (
 	"github.com/rs/zerolog"
 )
 
+const NOTICE = "NOTICE: bridgeaddr is shutting down at the end of 2024, please move your address to somewhere else."
+
 type Settings struct {
 	Host             string `envconfig:"HOST" default:"0.0.0.0"`
 	Port             string `envconfig:"PORT" required:"true"`
@@ -52,7 +54,19 @@ func main() {
 		func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 			w.Header().Set("content-type", "text/html")
-			fmt.Fprintf(w, readme+`<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>`)
+			fmt.Fprintf(w, readme+`
+<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
+
+<script>
+setTimeout(() => {
+  document.body.innerHTML += `+"`"+`
+    <div style="position: fixed;top:20px;right:20px;width:300px;padding:10px;font-size:1.2rem;border:2px solid;background: #f3d797;filter:drop-shadow(11px 12px 8px #efdede);"
+    >`+NOTICE+`</div>
+  `+"`"+`
+}, 3000)
+
+</script>
+`)
 		},
 	)
 

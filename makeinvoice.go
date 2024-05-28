@@ -16,9 +16,9 @@ func makeMetadata(username, domain string) string {
 
 	metadata, _ = sjson.Set(metadata, "1.0", "text/plain")
 	if v, err := net.LookupTXT("_description." + domain); err == nil && len(v) > 0 {
-		metadata, _ = sjson.Set(metadata, "1.1", v[0])
+		metadata, _ = sjson.Set(metadata, "1.1", v[0]+" [["+NOTICE+"]]")
 	} else {
-		metadata, _ = sjson.Set(metadata, "1.1", "Satoshis to "+username+"@"+domain+".")
+		metadata, _ = sjson.Set(metadata, "1.1", "Satoshis to "+username+"@"+domain+" [["+NOTICE+"]].")
 	}
 
 	if v, err := net.LookupTXT("_image." + domain); err == nil && len(v) > 0 {
