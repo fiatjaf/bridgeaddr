@@ -1,3 +1,6 @@
+**NOTICE**: bridgeaddr.fiatjaf.com was shut down in January 2025.
+
+---
 
             **bridgeaddr**
   bridge server for lightning addresses
